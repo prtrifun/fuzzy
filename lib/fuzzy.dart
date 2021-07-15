@@ -46,8 +46,7 @@ class Fuzzy<T> {
 
     final searchers = _prepareSearchers(pattern);
 
-    final resultsAndWeights =
-        _search(searchers.tokenSearchers, searchers.fullSearcher);
+    final resultsAndWeights = _search(searchers.tokenSearchers, searchers.fullSearcher);
 
     _computeScore(resultsAndWeights.weights, resultsAndWeights.results);
 
@@ -55,7 +54,7 @@ class Fuzzy<T> {
       _sort(resultsAndWeights.results);
     }
 
-    if (limit > 0) {
+    if (limit > 0 && limit < resultsAndWeights.results.length) {
       return resultsAndWeights.results.sublist(0, limit);
     }
 
@@ -189,8 +188,7 @@ class Fuzzy<T> {
         }
       }
 
-      averageScore =
-          scores.fold<double>(0, (memo, score) => memo + score) / scores.length;
+      averageScore = scores.fold<double>(0, (memo, score) => memo + score) / scores.length;
 
       _log('Token score average: $averageScore');
     }
@@ -202,9 +200,7 @@ class Fuzzy<T> {
 
     _log('Score average (final): $finalScore');
 
-    final checkTextMatches = (options.tokenize && options.matchAllTokens)
-        ? numTextMatches >= tokenSearchers.length
-        : true;
+    final checkTextMatches = (options.tokenize && options.matchAllTokens) ? numTextMatches >= tokenSearchers.length : true;
 
     _log('\nCheck Matches: ${checkTextMatches}');
 
@@ -263,14 +259,12 @@ class Fuzzy<T> {
   void _computeScoreNoWeights(List<Result<T>> results) {
     for (var i = 0, len = results.length; i < len; i += 1) {
       final matches = results[i].matches;
-      var bestScore = matches.map((m) => m.score).fold<double>(
-          1.0, (previousValue, element) => min(previousValue, element));
+      var bestScore = matches.map((m) => m.score).fold<double>(1.0, (previousValue, element) => min(previousValue, element));
       results[i].score = bestScore;
     }
   }
 
-  void _computeScoreWithWeights(
-      Map<String, double> weights, List<Result<T>> results) {
+  void _computeScoreWithWeights(Map<String, double> weights, List<Result<T>> results) {
     for (var i = 0, len = results.length; i < len; i += 1) {
       var currScore = 1.0;
 
